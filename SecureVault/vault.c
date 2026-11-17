@@ -33,6 +33,7 @@ int add_account(const Account *acc) {
     fprintf(vault_file, "\n-----------\n");
 
     printf("Account added successfully!\n");
+    log_event("Added new account: ");
     return 1;
 }
 
@@ -41,12 +42,19 @@ int view_accounts(void) {
 
     rewind(vault_file);
     char line[256];
+    int count = 0;
 
     printf("\n=== All Saved Accounts ===\n");
     while (fgets(line, sizeof(line), vault_file)) {
         printf("%s", line);
+        count++;
+    }
+
+    if (count == 0) {
+        printf("No accounts saved yet.\n");
     }
     printf("========================\n");
+    printf("Total accounts: %d\n", count);
 
     return 1;
 }
@@ -58,7 +66,7 @@ int search_account(const char *website) {
     char line[256];
     int found = 0;
 
-    printf("\n=== Search Results ===\n");
+    printf("\n=== Search Results for: %s ===\n", website);
     while (fgets(line, sizeof(line), vault_file)) {
         if (strstr(line, website) != NULL) {
             printf("%s", line);
@@ -69,8 +77,8 @@ int search_account(const char *website) {
     if (!found) {
         printf("No accounts found matching: %s\n", website);
     }
-
     printf("======================\n");
+
     return found;
 }
 
@@ -78,7 +86,10 @@ int update_account(const Account *acc) {
     if (!vault_file) return 0;
 
     printf("Updating account for: %s\n", acc->website);
-    // In a full implementation, would rewrite the account record
+    // In a full implementation, would find and rewrite the account record
+    // For now, log the update event
+    log_event("Updated account: ");
+    printf("Account update initiated.\n");
     return 1;
 }
 
@@ -87,6 +98,9 @@ int delete_account(const char *website) {
 
     printf("Deleting account: %s\n", website);
     // In a full implementation, would remove the account record
+    // For now, log the deletion event
+    log_event("Deleted account: ");
+    printf("Account deletion initiated.\n");
     return 1;
 }
 
