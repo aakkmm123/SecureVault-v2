@@ -4,7 +4,8 @@
 #include "config.h"
 
 int save_data(const char *filename, const char *data);
-char *load_data(const char *filename);
+char *load_data_dynamic(const char *filename);
+void free_data(char *data);
 void clear_data_file(const char *filename);
 
 #endif
