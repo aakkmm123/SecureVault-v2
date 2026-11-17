@@ -6,5 +6,6 @@
 int register_user(const char *username, const char *password);
 int login_user(const char *username, const char *password);
 void logout_user(void);
+unsigned int hash_password(const char *password);
 
 #endif

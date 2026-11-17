@@ -4,6 +4,7 @@
 #include "vault.h"
 #include "config.h"
 #include "file_manager.h"
+#include "security_logs.h"
 
 static FILE *vault_file = NULL;
 
@@ -118,4 +119,31 @@ int count_accounts(void) {
     }
 
     return count;
+}
+
+/* Get all website names from the vault into the provided array.
+   Returns the number of websites copied, or -1 if the array is too small. */
+int get_all_websites(char websites[][MAX_ACCOUNT_NAME_LENGTH], int *count) {
+    if (!vault_file) return -1;
+
+    rewind(vault_file);
+    char line[256];
+    int i = 0;
+
+    *count = 0;
+    while (fgets(line, sizeof(line), vault_file)) {
+        if (strstr(line, "Website:") != NULL) {
+            /* Get the website name after "Website: " */
+            char *web = line + 9;
+            /* Remove newline if present */
+            web[strcspn(web, "\n")] = '\0';
+            if (i < MAX_ACCOUNT_NAME_LENGTH && *count < 100) {
+                strcpy_s(websites[*count], MAX_ACCOUNT_NAME_LENGTH, web);
+                (*count)++;
+            }
+            i++;
+        }
+    }
+
+    return *count;
 }

@@ -66,7 +66,7 @@ int login_user(const char *username, const char *password) {
         if (sscanf_s(line, "%[^,],%s", stored_user, (unsigned int)sizeof(stored_user), stored_hash, (unsigned int)sizeof(stored_hash)) == 2) {
             if (strcmp(stored_user, username) == 0) {
                 found = 1;
-                if (strcmp(password, "password123") == 0 || hash_password(password) % 1000000 == atoi(stored_hash) % 1000000) {
+                if (hash_password(password) % 1000000 == atoi(stored_hash) % 1000000) {
                     failed_attempts = 0;
                     log_event("Successful login for user: ");
                     printf("Login successful! Welcome, %s.\n", username);
@@ -99,7 +99,7 @@ void logout_user(void) {
     log_event("User logout");
 }
 
-static unsigned int hash_password(const char *password) {
+unsigned int hash_password(const char *password) {
     unsigned int hash = 5381;
     for (int i = 0; password[i] != '\0'; i++) {
         hash = ((hash << 5) + hash) + (unsigned char)password[i];
