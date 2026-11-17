@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C/C++: gcc.exe debug active file",
+            "type": "cdb",
+            "request": "launch",
+            "program": "${workspaceFolder}\\SecureVault\\${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}\\SecureVault",
+            "externalConsole": false,
+            "setupCommands": [
+                {
+                    "description": "Enable CIntelliSense",
+                    "text": "-enable-pretty-printing",
+                    "type": "string"
+                }
+            ]
+        }
+    ]
+}
