@@ -99,9 +99,10 @@ int login_user(const char *username, const char *password) {
         if (fields == 2) {
             lowercase_string(tmp_user);
             if (strcmp(tmp_user, lc_username) == 0) {
-                /* Verify: compare hash_password(output) with stored hash */
+                /* Verify: compare hash_password(output) with stored hex hash */
                 unsigned int input_hash = hash_password(password);
-                if (input_hash == atoi(tmp_hash)) {
+                /* FIX: use strtol with base 16 to properly parse hex hash string */
+                if (input_hash == strtol(tmp_hash, NULL, 16)) {
                     correct = 1;
                     break;
                 }
