@@ -12,6 +12,9 @@ static void lowercase_string(char *str) {
     }
 }
 
+/* Shared file handle for users.txt - opened once, used across functions */
+static FILE *users_file = NULL;
+
 int init_users_file(void) {
     /* Open users file in append+read mode, create if doesn't exist */
     users_file = fopen(USERS_FILE, "a+");
