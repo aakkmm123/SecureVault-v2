@@ -122,11 +122,12 @@ int login_user(const char *username, const char *password) {
             /* New format with attempts */
             lowercase_string(tmp_user);
             if (strcmp(tmp_user, lc_username) == 0) {
-                /* Verify password using the same hash_password function */
-                if (hash_password(password) % 1000000 == atoi(tmp_hash) % 1000000) {
-                    correct = 1;
-                    break;
-                }
+/* Verify password using the same hash_password function */
+    unsigned int input_hash = hash_password(password);
+    if (input_hash == atoi(tmp_hash)) {
+        correct = 1;
+        break;
+    }
             }
         }
     }
