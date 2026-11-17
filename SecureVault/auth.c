@@ -16,6 +16,9 @@ static void lowercase_string(char *str) {
 }
 
 int register_user(const char *username, const char *password) {
+    /* MUST initialize users file FIRST so user_exists() can read it */
+    init_users_file();
+
     if (user_exists(username)) {
         printf("Error: Username already exists!\n");
         return FAILURE;
@@ -25,8 +28,6 @@ int register_user(const char *username, const char *password) {
         printf("Error: Password must be at least 8 characters long!\n");
         return FAILURE;
     }
-
-    init_users_file();
 
     /* Use the same hash_password function for consistency */
     unsigned int hash = hash_password(password);
@@ -39,7 +40,7 @@ int register_user(const char *username, const char *password) {
         return FAILURE;
     }
 
-    /* Store: username,hash (2-field format for backward compatibility) */
+    /* Store: username,hash (2-field format) */
     fprintf(f, "%s,%s\n", username, password_hash);
     fclose(f);
 
@@ -68,7 +69,7 @@ int login_user(const char *username, const char *password) {
     /* First pass: find the user and verify password */
     int found = 0;
     while (fgets(line, sizeof(line), f)) {
-        /* Handle both 2-field format: username,hash */
+        /* Handle 2-field format: username,hash */
         char tmp_user[MAX_USERNAME_LENGTH];
         char tmp_hash[65];
         int fields = sscanf_s(line, "%[^,],%s", tmp_user, (unsigned int)sizeof(tmp_user), tmp_hash, (unsigned int)sizeof(tmp_hash));
@@ -112,8 +113,7 @@ int login_user(const char *username, const char *password) {
     fclose(f);
 
     if (correct) {
-        /* Successful login - no per-user counter to reset since we switched to 2-field format */
-        /* But keep the function available for future use */
+        /* Successful login */
         log_event("Successful login for user: ");
         printf("Login successful! Welcome, %s.\n", username);
         return SUCCESS;
@@ -124,7 +124,6 @@ int login_user(const char *username, const char *password) {
 }
 
 void logout_user(void) {
-    /* No global failed_attempts to reset - per-user counters in users.txt */
     printf("Logged out successfully.\n");
     log_event("User logout");
 }
@@ -135,21 +134,4 @@ unsigned int hash_password(const char *password) {
         hash = ((hash << 5) + hash) + (unsigned char)password[i];
     }
     return hash;
-}
-
-/* Get the current failed-attempt count for a user (legacy compatibility) */
-int get_user_attempts(const char *username) {
-    /* Since we switched to 2-field format without attempt tracking,
-       return 0 for backward compatibility */
-    (void)username; /* Suppress unused parameter warning */
-    return 0;
-}
-
-/* Rewrite the user's line in users.txt with updated attempts (legacy compatibility) */
-int rewrite_user_attempts(const char *username, int new_attempts) {
-    /* Since we switched to 2-field format without attempt tracking,
-       this function is a no-op for backward compatibility */
-    (void)username;
-    (void)new_attempts;
-    return SUCCESS;
 }
