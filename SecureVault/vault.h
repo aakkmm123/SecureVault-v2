@@ -17,5 +17,7 @@ int search_account(const char *website);
 int update_account(const Account *acc);
 int delete_account(const char *website);
 int count_accounts(void);
+int init_vault(void);
+int get_all_websites(char websites[][MAX_ACCOUNT_NAME_LENGTH], int *count);
 
 #endif
