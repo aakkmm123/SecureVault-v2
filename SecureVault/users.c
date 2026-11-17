@@ -12,16 +12,15 @@ static void lowercase_string(char *str) {
     }
 }
 
-int init_users_file(void) {
-    fopen_s(&users_file, USERS_FILE, "a+");
-    if (users_file) {
-        fclose(users_file);
-    }
-    users_file = NULL;
+FILE *users_file = NULL;
 
-    FILE *check = fopen(USERS_FILE, "a");
-    if (check) fclose(check);
-    return 1;
+int init_users_file(void) {
+    /* Open users file in append+read mode, create if doesn't exist */
+    users_file = fopen(USERS_FILE, "a+");
+    if (users_file) {
+        fseek(users_file, 0, SEEK_SET); /* Rewind to beginning for reading */
+    }
+    return (users_file != NULL) ? 1 : 0;
 }
 
 int add_user(const char *username, const char *password_hash) {
@@ -30,6 +29,7 @@ int add_user(const char *username, const char *password_hash) {
     /* Case-insensitive duplicate check */
     if (user_exists(username)) return 0;
 
+    /* Write new user at end of file */
     fprintf(users_file, "%s,%s\n", username, password_hash);
     fflush(users_file);
 
@@ -52,6 +52,7 @@ int user_exists(const char *username) {
             strncpy(stored_user, line, len);
             stored_user[len] = '\0';
         } else {
+            /* No comma found - treat entire line as username (old format) */
             strncpy(stored_user, line, MAX_USERNAME_LENGTH - 1);
             stored_user[MAX_USERNAME_LENGTH - 1] = '\0';
         }
